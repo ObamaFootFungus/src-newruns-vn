@@ -1,9 +1,14 @@
 import requests
 import pickle
+import time
 from datetime import datetime
 
+# Information for the discord webhook
 webookID = "" # Ex: 1028011492051800084
 webhookToken = "" # Ex: MEpvTZE9WXkSFJP1PvhzhmMLWfo7jIqLpn6K0HWNXH88mxOhDT01Hcd4upZ0ttChpmsl
+
+# How often the script should run in seconds
+interval = 300
 
 # Get recently verified runs
 def get_runs():
@@ -126,6 +131,7 @@ def main():
     runs = check_for_old_runs(get_runs())
     for r in reversed(runs):
         send_to_webhook(format_data(r))
-    
+    time.sleep(interval)
+    main()
 
 main()
