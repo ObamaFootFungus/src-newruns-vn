@@ -40,7 +40,9 @@ def get_value_labels(valueArray):
 # Sort out previously used runs
 def check_for_old_runs(runArray):
     filtered = []
-    oldRuns = pickle.load(open('runs.data', 'rb'))
+    dataF = open('runs.data', 'rb')
+    oldRuns = pickle.load(dataF)
+    dataF.close()
     for run in runArray:
         if (run["id"] not in oldRuns):
             filtered.append(run)
