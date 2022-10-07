@@ -89,18 +89,25 @@ def format_time(time):
 
 # Formats runs for use
 def format_data(run):
+    place = get_place_on_leaderboard(run)
+    if place is None:
+        return None
+    if place > 3:
+        return None
     return {
         "header": "Voxyl Network - " +  get_category_name(run["category"]) + " - " + get_value_labels(run["values"]),
         "link": run["weblink"],
         "time": format_time(run["times"]["realtime_t"]),
         "players": get_player_names(run["players"]),
-        "rank": get_place_on_leaderboard(run),
+        "rank": place,
         "verify-date": run["status"]["verify-date"]
 
     }
 
 # Sends run message to discord webhook
 def send_to_webhook(run):
+    if run is None:
+        return
     webhookData = {
         "embeds": [{
             "title": run["time"] + " by " + run["players"],
