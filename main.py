@@ -1,6 +1,9 @@
 import requests
 import pickle
+from datetime import datetime
 
+webookID = "" # Ex: 1028011492051800084
+webhookToken = "" # Ex: MEpvTZE9WXkSFJP1PvhzhmMLWfo7jIqLpn6K0HWNXH88mxOhDT01Hcd4upZ0ttChpmsl
 
 # Get recently verified runs
 def get_runs():
@@ -91,12 +94,38 @@ def format_data(run):
 
     }
 
-# Returns array of runs for use
-def main():
-    final = []
-    runs = check_for_old_runs(get_runs())
-    for r in runs:
-        final.append(format_data(r))
-    return final or "No new runs"
+# Sends run message to discord webhook
+def send_to_webhook(run):
+    webhookData = {
+        "embeds": [{
+            "title": run["time"] + " by " + run["players"],
+            "type": "rich",
+            "url": run["link"],
+            "timestamp": datetime.now().isoformat(),
+            "author": {
+                "name": run["header"]
+            },
+            "fields": [{
+                "name": "Leaderboard Rank",
+                "value": run["rank"]
+            },
+            {
+                "name": "Verified at",
+                "value": "`" + run["verify-date"] + "`"
+            }],
+            "thumbnail": {
+                "url": "https://www.speedrun.com/gameasset/pd0qj2w1/cover?v=7430ead"
+            }
+        }]
+    }
+    requests.post("https://discord.com/api/v10/webhooks/" + webookID + "/" + webhookToken, json = webhookData)
 
-print(main())
+
+# Main func
+def main():
+    runs = check_for_old_runs(get_runs())
+    for r in reversed(runs):
+        send_to_webhook(format_data(r))
+    
+
+main()
