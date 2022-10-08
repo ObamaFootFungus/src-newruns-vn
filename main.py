@@ -149,6 +149,7 @@ def send_to_webhook(run):
 def main():
     runs = check_for_old_runs(get_runs())
     for r in reversed(runs):
+        time.sleep(2)
         send_to_webhook(format_data(r))
     time.sleep(interval)
     main()
