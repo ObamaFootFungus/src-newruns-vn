@@ -96,13 +96,20 @@ def format_data(run):
         return None
     if place > 3:
         return None
+    if place == 1:
+        color = 16766720
+    elif place == 2:
+        color = 12632256
+    else:
+        color = 13467442
     return {
         "header": "Voxyl Network - " +  get_category_name(run["category"]) + " - " + get_value_labels(run["values"]),
         "link": run["weblink"],
         "time": format_time(run["times"]["realtime_t"]),
         "players": get_player_names(run["players"]),
         "rank": place,
-        "verify-date": run["status"]["verify-date"]
+        "verify-date": run["status"]["verify-date"],
+        "color": color
 
     }
 
@@ -111,11 +118,14 @@ def send_to_webhook(run):
     if run is None:
         return
     webhookData = {
+        "username": "Mr. Thomas",
+        "avatar_url": "https://cdn.discordapp.com/avatars/819816951982981140/641e6e316c5b3c662a28ae049ecd754c.png?size=4096",
         "embeds": [{
             "title": run["time"] + " by " + run["players"],
             "type": "rich",
             "url": run["link"],
             "timestamp": datetime.now().isoformat(),
+            "color": run["color"],
             "author": {
                 "name": run["header"]
             },
