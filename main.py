@@ -12,20 +12,14 @@ interval = 300
 
 # Get recently verified runs
 def get_runs():
-    runs = requests.get("https://www.speedrun.com/api/v1/runs?game=pd0qj2w1&status=verified&orderby=verify-date&direction=desc&max=25")
+    runs = requests.get("https://www.speedrun.com/api/v1/runs?game=pd0qj2w1&status=verified&orderby=verify-date&direction=desc&max=25&embed=category,players")
     return (runs.json())["data"]
-
-# Get name of category by id
-def get_category_name(id):
-    category = requests.get("https://www.speedrun.com/api/v1/categories/" + id)
-    return (category.json())["data"]["name"]
 
 # Get names of players from array of player objects
 def get_player_names(playerArray):
     names = []
     for player in playerArray:
-        name = requests.get(player["uri"])
-        names.append((name.json())["data"]["names"]["international"])
+        names.append(player["names"]["international"])
     return ' - '.join(names)
 
 # Get the names of variable values
@@ -62,7 +56,7 @@ def format_values_for_request(values):
 # Get place of run of leaderboard
 def get_place_on_leaderboard(run):
     formattedValues = format_values_for_request(run["values"])
-    leaderboard = requests.get("https://www.speedrun.com/api/v1/leaderboards/" + run["game"] + "/category/" + run["category"] + "?" + formattedValues)
+    leaderboard = requests.get("https://www.speedrun.com/api/v1/leaderboards/" + run["game"] + "/category/" + run["category"]["data"]["id"] + "?" + formattedValues)
     leaderboard = leaderboard.json()
     rank = None
     for r in leaderboard["data"]["runs"]:
@@ -103,10 +97,10 @@ def format_data(run):
     else:
         color = 13467442
     return {
-        "header": "Voxyl Network - " +  get_category_name(run["category"]) + " - " + get_value_labels(run["values"]),
+        "header": "Voxyl Network - " +  run["category"]["data"]["name"] + " - " + get_value_labels(run["values"]),
         "link": run["weblink"],
         "time": format_time(run["times"]["realtime_t"]),
-        "players": get_player_names(run["players"]),
+        "players": get_player_names(run["players"]["data"]),
         "rank": place,
         "verify-date": run["status"]["verify-date"],
         "color": color
